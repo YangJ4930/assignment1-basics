@@ -11,6 +11,7 @@ from torch import Tensor
 
 from cs336_basics.model.embedding import MyEmbedding
 from cs336_basics.model.linear import MyLinear
+from cs336_basics.model.rmsNorm import MyRmsNorm
 
 
 def run_linear(
@@ -366,14 +367,13 @@ def run_transformer_lm(
     raise NotImplementedError
 
 
+from cs336_basics.model.rmsNorm import MyRmsNorm
+
 def run_rmsnorm(
-    d_model: int,
-    eps: float,
-    weights: Float[Tensor, " d_model"],
-    in_features: Float[Tensor, " ... d_model"],
+    d_model: int, eps: float, weights: Float[Tensor, " d_model"], in_features: Float[Tensor, " ... d_model"]
 ) -> Float[Tensor, " ... d_model"]:
-    """Given the weights of a RMSNorm affine transform,
-    return the output of running RMSNorm on the input features.
+    """
+    Given the weights of an RMSNorm layer, run RMSNorm on the input features.
 
     Args:
         d_model (int): The dimensionality of the RMSNorm input.
@@ -386,7 +386,10 @@ def run_rmsnorm(
         Float[Tensor,"... d_model"]: Tensor of with the same shape as `in_features` with the output of running
         RMSNorm of the `in_features`.
     """
-    raise NotImplementedError
+    myRmsNorm = MyRmsNorm(d_model, eps)
+    myRmsNorm.weight = torch.nn.Parameter(weights)
+
+    return myRmsNorm(in_features)
 
 
 def run_silu(in_features: Float[Tensor, " ..."]) -> Float[Tensor, " ..."]:

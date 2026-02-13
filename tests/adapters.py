@@ -12,6 +12,7 @@ from torch import Tensor
 from cs336_basics.model.embedding import MyEmbedding
 from cs336_basics.model.linear import MyLinear
 from cs336_basics.model.rmsNorm import MyRmsNorm
+from cs336_basics.model.softmax import MySoftmax
 from cs336_basics.model.swiglu import MySwiGlu, silu
 
 
@@ -447,7 +448,8 @@ def run_softmax(in_features: Float[Tensor, " ..."], dim: int) -> Float[Tensor, "
         Float[Tensor, "..."]: Tensor of with the same shape as `in_features` with the output of
         softmax normalizing the specified `dim`.
     """
-    raise NotImplementedError
+    softmax = MySoftmax()
+    return softmax(in_features)
 
 
 def run_cross_entropy(

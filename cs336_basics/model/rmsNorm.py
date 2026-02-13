@@ -1,5 +1,3 @@
-import math
-
 import torch.nn as nn
 import torch
 
@@ -10,6 +8,7 @@ class MyRmsNorm(nn.Module):
         super().__init__()
         self.weight = nn.Parameter(torch.empty(d_model, device=device, dtype=dtype))
         self.eps = eps
+        nn.init.trunc_normal_(self.weight, mean=0.0, std=0.02, a=-0.04, b=0.04)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # batch_size seq_len dim

@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import json
 import os
-import resource
+try:
+    import resource  # 尝试导入
+except ImportError:
+    resource = None  # 如果是 Windows 导不进去，就设为 None
 import sys
 
 import psutil

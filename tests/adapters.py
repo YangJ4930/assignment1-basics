@@ -16,6 +16,7 @@ from cs336_basics.model.rope import MyRope
 from cs336_basics.model.scaled_dot_product_attention import MyScaleDotProductAttention
 from cs336_basics.model.softmax import MySoftmax
 from cs336_basics.model.swiglu import MySwiGlu, silu
+from cs336_basics.train.cross_entropy import MyCrossEntropy
 
 
 def run_linear(
@@ -469,7 +470,8 @@ def run_cross_entropy(
     Returns:
         Float[Tensor, ""]: The average cross-entropy loss across examples.
     """
-    raise NotImplementedError
+    cross_entropy = MyCrossEntropy()
+    return cross_entropy(inputs, targets)
 
 
 def run_gradient_clipping(parameters: Iterable[torch.nn.Parameter], max_l2_norm: float) -> None:

@@ -8,7 +8,7 @@ class MySoftmax(nn.Module):
         super().__init__()
 
     def forward(self, x):
-        x_max = x.max()
+        x_max = x.max(dim=-1, keepdim=True).values
         x = x - x_max
         x_exp = torch.exp(x)
         x_exp_sum = x_exp.sum(dim=-1, keepdim=True)

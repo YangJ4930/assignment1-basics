@@ -3,10 +3,17 @@ import torch
 
 class MyRope(nn.Module):
 
-    def __init__(self):
+    def __init__(self, theta: float, d_k: int, max_seq_len: int, device=None):
         super().__init__()
+        freq_base = torch.arange(0, d_k, 2, device=device)
+        freq_base = 1.0 / (theta ** (freq_base / d_k))
+        position = torch.arange(0, max_seq_len, device=device)
+        angles = torch.outer(position, freq_base)
+        self.register_buffer("cos", torch.cos(angles))
+        self.register_buffer("sin", torch.sin(angles))
 
-    def forward(self, dk, theta, max_seq_len, in_query_or_key, token_positions):
+
+    def forward(self, in_query_or_key, token_positions):
         """
            Run RoPE for a given input tensor.
 
@@ -19,11 +26,8 @@ class MyRope(nn.Module):
            Returns:
                Float[Tensor, " ... sequence_length d_k"]: Tensor with RoPEd input.
            """
-        freq_base = torch.arange(0, dk, 2, device=in_query_or_key.device, dtype=in_query_or_key.dtype)
-        freq_base = 1.0 / (theta ** (freq_base / dk))
-        angles = token_positions.to(in_query_or_key.dtype).unsqueeze(-1) * freq_base
-        cos = torch.cos(angles)
-        sin = torch.sin(angles)
+        cos = self.cos[token_positions, :]
+        sin = self.sin[token_positions, :]
         x1 = in_query_or_key[..., 0::2]
         x2 = in_query_or_key[..., 1::2]
         rotate1 = x1 * cos - x2 * sin

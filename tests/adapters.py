@@ -12,6 +12,7 @@ from torch import Tensor
 from cs336_basics.model.embedding import MyEmbedding
 from cs336_basics.model.linear import MyLinear
 from cs336_basics.model.rmsNorm import MyRmsNorm
+from cs336_basics.model.rope import MyRope
 from cs336_basics.model.softmax import MySoftmax
 from cs336_basics.model.swiglu import MySwiGlu, silu
 
@@ -212,8 +213,8 @@ def run_rope(
     Returns:
         Float[Tensor, " ... sequence_length d_k"]: Tensor with RoPEd input.
     """
-    raise NotImplementedError
-
+    rope = MyRope()
+    return rope(d_k, theta, max_seq_len, in_query_or_key, token_positions)
 
 def run_transformer_block(
     d_model: int,

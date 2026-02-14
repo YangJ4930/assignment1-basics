@@ -1,9 +1,5 @@
 import torch.nn as nn
 import torch
-import torch.nn.functional as F
-
-from cs336_basics.model.softmax import MySoftmax
-
 
 class MyCrossEntropy(nn.Module):
 

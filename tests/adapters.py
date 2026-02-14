@@ -11,7 +11,7 @@ from torch import Tensor
 
 from cs336_basics.model.embedding import MyEmbedding
 from cs336_basics.model.linear import MyLinear
-from cs336_basics.model.rmsNorm import MyRmsNorm
+from cs336_basics.model.rms_norm import MyRmsNorm
 from cs336_basics.model.rope import MyRope
 from cs336_basics.model.scaled_dot_product_attention import MyScaleDotProductAttention
 from cs336_basics.model.softmax import MySoftmax
@@ -373,7 +373,7 @@ def run_transformer_lm(
     raise NotImplementedError
 
 
-from cs336_basics.model.rmsNorm import MyRmsNorm
+from cs336_basics.model.rms_norm import MyRmsNorm
 
 def run_rmsnorm(
     d_model: int,

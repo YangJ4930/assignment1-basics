@@ -11,6 +11,7 @@ from torch import Tensor
 
 from cs336_basics.model.embedding import MyEmbedding
 from cs336_basics.model.linear import MyLinear
+from cs336_basics.model.multi_head_attention import MyMultiHeadAttention
 from cs336_basics.model.rms_norm import MyRmsNorm
 from cs336_basics.model.rope import MyRope
 from cs336_basics.model.scaled_dot_product_attention import MyScaleDotProductAttention
@@ -153,7 +154,12 @@ def run_multihead_self_attention(
         Float[Tensor, " ... sequence_length d_out"]: Tensor with the output of running your optimized, batched multi-headed attention
         implementation with the given QKV projection weights and input features.
     """
-    raise NotImplementedError
+    mha = MyMultiHeadAttention(d_model, num_heads)
+    mha.q_linear.weight = torch.nn.Parameter(q_proj_weight.T)
+    mha.k_linear.weight = torch.nn.Parameter(k_proj_weight.T)
+    mha.v_linear.weight = torch.nn.Parameter(v_proj_weight.T)
+    mha.o_linear.weight = torch.nn.Parameter(o_proj_weight.T)
+    return mha(in_features)
 
 
 def run_multihead_self_attention_with_rope(
@@ -193,8 +199,13 @@ def run_multihead_self_attention_with_rope(
         Float[Tensor, " ... sequence_length d_out"]: Tensor with the output of running your optimized, batched multi-headed attention
         implementation with the given QKV projection weights and input features.
     """
-    raise NotImplementedError
-
+    mha = MyMultiHeadAttention(d_model, num_heads)
+    mha.q_linear.weight = torch.nn.Parameter(q_proj_weight.T)
+    mha.k_linear.weight = torch.nn.Parameter(k_proj_weight.T)
+    mha.v_linear.weight = torch.nn.Parameter(v_proj_weight.T)
+    mha.o_linear.weight = torch.nn.Parameter(o_proj_weight.T)
+    rope = MyRope(theta, d_model // num_heads, max_seq_len, in_features.device)
+    return mha(in_features, rope, token_positions)
 
 def run_rope(
     d_k: int,
@@ -372,8 +383,6 @@ def run_transformer_lm(
     """
     raise NotImplementedError
 
-
-from cs336_basics.model.rms_norm import MyRmsNorm
 
 def run_rmsnorm(
     d_model: int,

@@ -4,18 +4,20 @@ import torch
 from cs336_basics.model.linear import MyLinear
 from cs336_basics.model.rope import MyRope
 from cs336_basics.model.scaled_dot_product_attention import MyScaleDotProductAttention
+
+
 class MyMultiHeadAttention(nn.Module):
 
-    def __init__(self, d_model, num_heads):
+    def __init__(self, d_model, num_heads, device=None, dtype=None):
         super().__init__()
-        self.q_linear = MyLinear(d_model, d_model)
-        self.k_linear = MyLinear(d_model, d_model)
-        self.v_linear = MyLinear(d_model, d_model)
-        self.o_linear = MyLinear(d_model, d_model)
+        self.q_linear = MyLinear(d_model, d_model, device, dtype)
+        self.k_linear = MyLinear(d_model, d_model, device, dtype)
+        self.v_linear = MyLinear(d_model, d_model, device, dtype)
+        self.o_linear = MyLinear(d_model, d_model, device, dtype)
         self.heads = num_heads
         self.hidden_dim = d_model
 
-    def forward(self, x, rope: MyRope = None, position = None):
+    def forward(self, x, rope: MyRope = None, position=None):
         # B L D
         B = x.shape[0]
         L = x.shape[1]
@@ -25,6 +27,8 @@ class MyMultiHeadAttention(nn.Module):
         Q = Q.view(B, L, self.heads, self.hidden_dim // self.heads).transpose(1, 2)
         K = K.view(B, L, self.heads, self.hidden_dim // self.heads).transpose(1, 2)
         V = V.view(B, L, self.heads, self.hidden_dim // self.heads).transpose(1, 2)
+        if position is None:
+            position = torch.arange(0, L, 1, device=x.device).unsqueeze(0).repeat(B, 1)
         if rope is not None:
             Q = rope(Q, position.unsqueeze(1))
             K = rope(K, position.unsqueeze(1))

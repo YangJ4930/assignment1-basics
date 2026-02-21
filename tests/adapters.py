@@ -17,6 +17,7 @@ from cs336_basics.model.rope import MyRope
 from cs336_basics.model.scaled_dot_product_attention import MyScaleDotProductAttention
 from cs336_basics.model.softmax import MySoftmax
 from cs336_basics.model.swiglu import MySwiGlu, silu
+from cs336_basics.model.transformer_block import MyTransformerBlock
 from cs336_basics.train.cross_entropy import MyCrossEntropy
 
 
@@ -95,9 +96,9 @@ def run_swiglu(
     
     # Assign weights directly
     # The weights passed in are already (out, in) which matches our nn.Parameter definition
-    swiglu.W1 = torch.nn.Parameter(w1_weight)
-    swiglu.W2 = torch.nn.Parameter(w2_weight)
-    swiglu.W3 = torch.nn.Parameter(w3_weight)
+    swiglu.W1.weight = torch.nn.Parameter(w1_weight.T)
+    swiglu.W2.weight = torch.nn.Parameter(w2_weight.T)
+    swiglu.W3.weight = torch.nn.Parameter(w3_weight.T)
     
     return swiglu(in_features)
 
@@ -299,7 +300,21 @@ def run_transformer_block(
         Float[Tensor, "batch sequence_length d_model"] Tensor with the output of
         running the Transformer block on the input features while using RoPE.
     """
-    raise NotImplementedError
+    transformerBlock = MyTransformerBlock(d_model, num_heads, d_ff, in_features.device, in_features.dtype)
+    transformerBlock.rmsNorm1.weight = torch.nn.Parameter(weights['ln1.weight'])
+    transformerBlock.rmsNorm2.weight = torch.nn.Parameter(weights['ln2.weight'])
+    transformerBlock.mha.q_linear.weight = torch.nn.Parameter(weights['attn.q_proj.weight'].T)
+    transformerBlock.mha.k_linear.weight = torch.nn.Parameter(weights['attn.k_proj.weight'].T)
+    transformerBlock.mha.v_linear.weight = torch.nn.Parameter(weights['attn.v_proj.weight'].T)
+    transformerBlock.mha.o_linear.weight = torch.nn.Parameter(weights['attn.output_proj.weight'].T)
+    transformerBlock.position_feed_forward_network.W1.weight = torch.nn.Parameter(weights['ffn.w1.weight'].T)
+    transformerBlock.position_feed_forward_network.W2.weight = torch.nn.Parameter(weights['ffn.w2.weight'].T)
+    transformerBlock.position_feed_forward_network.W3.weight = torch.nn.Parameter(weights['ffn.w3.weight'].T)
+
+    rope = MyRope(theta, d_model // num_heads, max_seq_len, in_features.device)
+
+    return transformerBlock(in_features, rope)
+
 
 
 def run_transformer_lm(

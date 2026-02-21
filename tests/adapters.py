@@ -41,7 +41,7 @@ def run_linear(
     """
 
     myLinear = MyLinear(d_in, d_out)
-    myLinear.weight = torch.nn.Parameter(weights.T)
+    myLinear.weight = torch.nn.Parameter(weights)
     return myLinear(in_features)
 
 
@@ -96,9 +96,9 @@ def run_swiglu(
     
     # Assign weights directly
     # The weights passed in are already (out, in) which matches our nn.Parameter definition
-    swiglu.W1.weight = torch.nn.Parameter(w1_weight.T)
-    swiglu.W2.weight = torch.nn.Parameter(w2_weight.T)
-    swiglu.W3.weight = torch.nn.Parameter(w3_weight.T)
+    swiglu.W1.weight = torch.nn.Parameter(w1_weight)
+    swiglu.W2.weight = torch.nn.Parameter(w2_weight)
+    swiglu.W3.weight = torch.nn.Parameter(w3_weight)
     
     return swiglu(in_features)
 
@@ -156,10 +156,10 @@ def run_multihead_self_attention(
         implementation with the given QKV projection weights and input features.
     """
     mha = MyMultiHeadAttention(d_model, num_heads)
-    mha.q_linear.weight = torch.nn.Parameter(q_proj_weight.T)
-    mha.k_linear.weight = torch.nn.Parameter(k_proj_weight.T)
-    mha.v_linear.weight = torch.nn.Parameter(v_proj_weight.T)
-    mha.o_linear.weight = torch.nn.Parameter(o_proj_weight.T)
+    mha.q_linear.weight = torch.nn.Parameter(q_proj_weight)
+    mha.k_linear.weight = torch.nn.Parameter(k_proj_weight)
+    mha.v_linear.weight = torch.nn.Parameter(v_proj_weight)
+    mha.o_linear.weight = torch.nn.Parameter(o_proj_weight)
     return mha(in_features)
 
 
@@ -201,10 +201,10 @@ def run_multihead_self_attention_with_rope(
         implementation with the given QKV projection weights and input features.
     """
     mha = MyMultiHeadAttention(d_model, num_heads)
-    mha.q_linear.weight = torch.nn.Parameter(q_proj_weight.T)
-    mha.k_linear.weight = torch.nn.Parameter(k_proj_weight.T)
-    mha.v_linear.weight = torch.nn.Parameter(v_proj_weight.T)
-    mha.o_linear.weight = torch.nn.Parameter(o_proj_weight.T)
+    mha.q_linear.weight = torch.nn.Parameter(q_proj_weight)
+    mha.k_linear.weight = torch.nn.Parameter(k_proj_weight)
+    mha.v_linear.weight = torch.nn.Parameter(v_proj_weight)
+    mha.o_linear.weight = torch.nn.Parameter(o_proj_weight)
     rope = MyRope(theta, d_model // num_heads, max_seq_len, in_features.device)
     return mha(in_features, rope, token_positions)
 
@@ -303,13 +303,13 @@ def run_transformer_block(
     transformerBlock = MyTransformerBlock(d_model, num_heads, d_ff, in_features.device, in_features.dtype)
     transformerBlock.rmsNorm1.weight = torch.nn.Parameter(weights['ln1.weight'])
     transformerBlock.rmsNorm2.weight = torch.nn.Parameter(weights['ln2.weight'])
-    transformerBlock.mha.q_linear.weight = torch.nn.Parameter(weights['attn.q_proj.weight'].T)
-    transformerBlock.mha.k_linear.weight = torch.nn.Parameter(weights['attn.k_proj.weight'].T)
-    transformerBlock.mha.v_linear.weight = torch.nn.Parameter(weights['attn.v_proj.weight'].T)
-    transformerBlock.mha.o_linear.weight = torch.nn.Parameter(weights['attn.output_proj.weight'].T)
-    transformerBlock.position_feed_forward_network.W1.weight = torch.nn.Parameter(weights['ffn.w1.weight'].T)
-    transformerBlock.position_feed_forward_network.W2.weight = torch.nn.Parameter(weights['ffn.w2.weight'].T)
-    transformerBlock.position_feed_forward_network.W3.weight = torch.nn.Parameter(weights['ffn.w3.weight'].T)
+    transformerBlock.mha.q_linear.weight = torch.nn.Parameter(weights['attn.q_proj.weight'])
+    transformerBlock.mha.k_linear.weight = torch.nn.Parameter(weights['attn.k_proj.weight'])
+    transformerBlock.mha.v_linear.weight = torch.nn.Parameter(weights['attn.v_proj.weight'])
+    transformerBlock.mha.o_linear.weight = torch.nn.Parameter(weights['attn.output_proj.weight'])
+    transformerBlock.position_feed_forward_network.W1.weight = torch.nn.Parameter(weights['ffn.w1.weight'])
+    transformerBlock.position_feed_forward_network.W2.weight = torch.nn.Parameter(weights['ffn.w2.weight'])
+    transformerBlock.position_feed_forward_network.W3.weight = torch.nn.Parameter(weights['ffn.w3.weight'])
 
     rope = MyRope(theta, d_model // num_heads, max_seq_len, in_features.device)
 
